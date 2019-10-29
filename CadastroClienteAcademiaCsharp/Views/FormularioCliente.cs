@@ -25,12 +25,12 @@ namespace CadastroClienteAcademiaCsharp
 
         private void LoadCliente()
         {
-            var cliente = _clienteService.GetClientesById(_clienteId);
-            txtCodigo.Text = cliente.Rows[0]["Codigo"].ToString();
-            txtNome.Text = cliente.Rows[0]["Nome"].ToString();
-            txtCidade.Text = cliente.Rows[0]["Cidade"].ToString();
-            cidadeId = cliente.Rows[0]["CidadeId"].ToString();
-            txtTelefone.Text = cliente.Rows[0]["Telefone"].ToString();
+            var cliente = _clienteService.GetClienteById(_clienteId);
+            txtCodigo.Text = cliente.Codigo.ToString();
+            txtNome.Text = cliente.Nome.ToString();
+            txtCidade.Text = cliente.Cidade.Nome.ToString();
+            cidadeId = cliente.CidadeId.ToString();
+            txtTelefone.Text = cliente.Telefone.ToString();
         }
 
         private void btnFechar_Click(object sender, EventArgs e)

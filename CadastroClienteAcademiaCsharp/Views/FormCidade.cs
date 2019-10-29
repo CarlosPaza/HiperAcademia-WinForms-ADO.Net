@@ -1,7 +1,10 @@
 ﻿using CadastroClienteAcademiaCsharp.Services;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using CadastroClienteAcademiaCsharp.Domain;
 
 namespace CadastroClienteAcademiaCsharp
 {
@@ -22,7 +25,7 @@ namespace CadastroClienteAcademiaCsharp
             Close();
         }
 
-        private void SetDataSource(DataTable dados)
+        private void SetDataSource(IEnumerable<Cidade> dados)
         {
             dgvCidade.DataSource = dados;
             dgvCidade.Columns[0].Visible = false;

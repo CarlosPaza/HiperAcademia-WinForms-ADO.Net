@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using CadastroClienteAcademiaCsharp.Domain;
+using Dapper;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
     public class CidadeDAO : ConexaoBd
     {
-        public DataTable GetCidades()
+        public IEnumerable<Cidade> GetCidades()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -16,32 +20,11 @@ namespace CadastroClienteAcademiaCsharp.Data
                               FROM Cidade a
                              ORDER BY a.Nome";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
-                {
-                    try
-                    {
-                        connection.Open();
-                        using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
-                        {
-                            var dataTable = new DataTable();
-                            dataTable.Load(dataReader);
-                            dataReader.Close();
-                            return dataTable;
-                        }
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível carregar as cidades.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                return connection.Query<Cidade>(sql);
             }
         }
 
-        public DataTable GetCidadesByNome(string nome)
+        public IEnumerable<Cidade> GetCidadesByNome(string nome)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -52,30 +35,7 @@ namespace CadastroClienteAcademiaCsharp.Data
                              WHERE a.Nome like '%' + @nome + '%'
                              ORDER BY a.Nome";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
-                {
-                    sqlCommand.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar));
-                    sqlCommand.Parameters["@nome"].Value = nome;
-                    try
-                    {
-                        connection.Open();
-                        using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
-                        {
-                            var dataTable = new DataTable();
-                            dataTable.Load(dataReader);
-                            dataReader.Close();
-                            return dataTable;
-                        }
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível carregar as cidades.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                return connection.Query<Cidade>(sql, new { nome = nome });
             }
         }
     }

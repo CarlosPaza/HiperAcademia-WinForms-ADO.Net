@@ -1,133 +1,89 @@
 ﻿using CadastroClienteAcademiaCsharp.Domain;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using Dapper;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
     public class ClienteDAO : ConexaoBd
     {
-        public DataTable GetClientes()
+        public IEnumerable<Cliente> GetClientes()
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 var sql = @"SELECT a.Id
                                   ,a.Codigo
                                   ,a.Nome
-                                  ,b.Nome as Cidade
                                   ,a.Telefone
                                   ,a.DataCadastro as Cadastro
+                                  ,a.CidadeId
+                                  ,b.Id
+                                  ,b.Nome
+                                  ,b.Estado
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              ORDER BY a.Codigo";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                return connection.Query<Cliente, Cidade, Cliente>(sql, (cliente, cidade) =>
                 {
-                    try
-                    {
-                        connection.Open();
-                        using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
-                        {
-                            var dataTable = new DataTable();
-                            dataTable.Load(dataReader);
-                            dataReader.Close();
-                            return dataTable;
-                        }
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível carregar os clientes.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                    cliente.Cidade = cidade;
+                    return cliente;
+                });
             }
         }
 
-        public DataTable GetClientesByNome(string nome)
+        public IEnumerable<Cliente> GetClientesByNome(string nome)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 var sql = @"SELECT a.Id
                                   ,a.Codigo
                                   ,a.Nome
-                                  ,b.Nome as Cidade
                                   ,a.Telefone
                                   ,a.DataCadastro as Cadastro
+                                  ,a.CidadeId
+                                  ,b.Id
+                                  ,b.Nome
+                                  ,b.Estado
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              WHERE a.Nome like '%' + @nome + '%'
                              ORDER BY a.Codigo";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                return connection.Query<Cliente, Cidade, Cliente>(sql, (cliente, cidade) =>
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar));
-                    sqlCommand.Parameters["@nome"].Value = nome;
-                    //sqlCommand.Parameters.AddWithValue("@nome", nome);
-                    try
-                    {
-                        connection.Open();
-                        using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
-                        {
-                            var dataTable = new DataTable();
-                            dataTable.Load(dataReader);
-                            dataReader.Close();
-                            return dataTable;
-                        }
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível carregar os clientes.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                    cliente.Cidade = cidade;
+                    return cliente;
+                }, new { nome = nome });
             }
         }
 
-        public DataTable GetClientesById(Guid id)
+        public Cliente GetClienteById(Guid id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 var sql = @"SELECT a.Id
                                   ,a.Codigo
                                   ,a.Nome
-                                  ,b.Id as CidadeId
-                                  ,b.Nome as Cidade
+                                  ,a.CidadeId
                                   ,a.Telefone
                                   ,a.DataCadastro as Cadastro
+                                  ,b.Id
+                                  ,b.Nome
+                                  ,b.Estado
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              WHERE a.Id = @id";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                return connection.Query<Cliente, Cidade, Cliente>(sql, (cliente, cidade) =>
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("@id", SqlDbType.UniqueIdentifier));
-                    sqlCommand.Parameters["@id"].Value = id;
-                    try
-                    {
-                        connection.Open();
-                        using (SqlDataReader dataReader = sqlCommand.ExecuteReader())
-                        {
-                            var dataTable = new DataTable();
-                            dataTable.Load(dataReader);
-                            dataReader.Close();
-                            return dataTable;
-                        }
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível carregar o cliente.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                    cliente.Cidade = cidade;
+                    return cliente;
+                }, new { id = id }).FirstOrDefault();
             }
         }
 
@@ -138,28 +94,12 @@ namespace CadastroClienteAcademiaCsharp.Data
                 var sql = @"INSERT INTO Cliente (Nome, CidadeId, Telefone)
                              VALUES (@nome, @cidade, @telefone)";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                return connection.Execute(sql, new
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar));
-                    sqlCommand.Parameters["@nome"].Value = cliente.Nome;
-                    sqlCommand.Parameters.Add(new SqlParameter("@cidade", SqlDbType.UniqueIdentifier));
-                    sqlCommand.Parameters["@cidade"].Value = cliente.CidadeId == Guid.Empty ? (object)DBNull.Value : cliente.CidadeId;
-                    sqlCommand.Parameters.Add(new SqlParameter("@telefone", SqlDbType.VarChar));
-                    sqlCommand.Parameters["@telefone"].Value = cliente.Telefone;
-                    try
-                    {
-                        connection.Open();
-                        return sqlCommand.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível inserir o cliente.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                    nome = cliente.Nome,
+                    cidade = cliente.CidadeId,
+                    telefone = cliente.Telefone
+                });
             }
         }
 
@@ -167,36 +107,19 @@ namespace CadastroClienteAcademiaCsharp.Data
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                var sql = @"UPDATE Cliente 
-                               SET Nome = @nome, 
-                                   CidadeId = @cidade, 
+                var sql = @"UPDATE Cliente
+                               SET Nome = @nome,
+                                   CidadeId = @cidade,
                                    Telefone = @telefone
                              WHERE Id = @id";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                return connection.Execute(sql, new
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("@nome", SqlDbType.VarChar));
-                    sqlCommand.Parameters["@nome"].Value = cliente.Nome;
-                    sqlCommand.Parameters.Add(new SqlParameter("@cidade", SqlDbType.UniqueIdentifier));
-                    sqlCommand.Parameters["@cidade"].Value = cliente.CidadeId == Guid.Empty ? (object)DBNull.Value : cliente.CidadeId;
-                    sqlCommand.Parameters.Add(new SqlParameter("@telefone", SqlDbType.VarChar));
-                    sqlCommand.Parameters["@telefone"].Value = cliente.Telefone;
-                    sqlCommand.Parameters.Add(new SqlParameter("@id", SqlDbType.UniqueIdentifier));
-                    sqlCommand.Parameters["@id"].Value = cliente.Id;
-                    try
-                    {
-                        connection.Open();
-                        return sqlCommand.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível editar o cliente.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                    id = cliente.Id,
+                    nome = cliente.Nome,
+                    cidade = cliente.CidadeId,
+                    telefone = cliente.Telefone
+                });
             }
         }
 
@@ -204,27 +127,13 @@ namespace CadastroClienteAcademiaCsharp.Data
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                var sql = @"DELETE FROM Cliente 
+                var sql = @"DELETE FROM Cliente
                              WHERE Id = @id";
 
-                using (SqlCommand sqlCommand = new SqlCommand(sql, connection))
+                return connection.Execute(sql, new
                 {
-                    sqlCommand.Parameters.Add(new SqlParameter("@id", SqlDbType.UniqueIdentifier));
-                    sqlCommand.Parameters["@id"].Value = clienteId;
-                    try
-                    {
-                        connection.Open();
-                        return sqlCommand.ExecuteNonQuery();
-                    }
-                    catch
-                    {
-                        throw new Exception("Não foi possível excluir o cliente.");
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
-                }
+                    id = clienteId
+                });
             }
         }
     }
