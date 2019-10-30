@@ -9,7 +9,7 @@ using Dapper;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
-    public class CidadeDAO : ConexaoBd
+    public class CidadeRepository : ConexaoBd
     {
         public IEnumerable<Cidade> GetCidades()
         {

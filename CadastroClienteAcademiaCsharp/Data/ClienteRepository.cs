@@ -10,19 +10,9 @@ using Dapper;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
-    public class ClienteDAO : ConexaoBd
+    public class ClienteRepository : ConexaoBd
     {
-        public IEnumerable<Cliente> GetClientes()
-        {
-            using (var db = new DatabaseContext())
-            {
-                return db.Clientes
-                    .Include(x => x.Cidade)
-                    .OrderBy(x => x.Codigo).ToList();
-            }
-        }
-
-        public IEnumerable<Cliente> GetClientesByNome(string nome)
+        public IEnumerable<Cliente> GetClientes(string nome)
         {
             using (var db = new DatabaseContext())
             {
@@ -32,7 +22,7 @@ namespace CadastroClienteAcademiaCsharp.Data
                     .OrderBy(x => x.Codigo).ToList();
             }
         }
-
+        
         public Cliente GetClienteById(Guid id)
         {
             using (var db = new DatabaseContext())

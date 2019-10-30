@@ -10,14 +10,14 @@ namespace CadastroClienteAcademiaCsharp.Services
     {
         public IEnumerable<Cidade> GetCidades()
         {
-            return new CidadeDAO().GetCidades();
+            return new CidadeRepository().GetCidades();
         }
 
         public IEnumerable<Cidade> GetCidadesByNome(string nome)
         {
             return string.IsNullOrEmpty(nome) ?
                 GetCidades() :
-                new CidadeDAO().GetCidadesByNome(nome);
+                new CidadeRepository().GetCidadesByNome(nome);
         }
     }
 }
