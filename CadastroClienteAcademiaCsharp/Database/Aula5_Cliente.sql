@@ -36,9 +36,11 @@ CREATE TABLE Cliente
  Nome nvarchar(100) NOT NULL,
  CidadeId uniqueidentifier NULL,
  Telefone nvarchar(20) NULL,
- DataCadastro datetime DEFAULT CURRENT_TIMESTAMP NOT NULL
+ DataCadastro datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+ CONSTRAINT FK_Cidade FOREIGN KEY (CidadeId) REFERENCES Cidade(Id)
 )
 GO
+
 
 INSERT INTO Cliente (Nome, CidadeId, Telefone)
  VALUES ('João', (SELECT Id FROM Cidade where Nome = 'Brusque'), '4712349876'), 
