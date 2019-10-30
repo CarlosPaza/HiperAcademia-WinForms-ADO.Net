@@ -1,91 +1,115 @@
 ﻿using CadastroClienteAcademiaCsharp.Domain;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
+using Dapper;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
     public class ClienteRepository : ConexaoBd
     {
-        public DataTable GetClientes(string nome)
+        public IEnumerable<Cliente> GetClientes(string nome)
         {
-            var conexaoBd = new ConexaoBd();
-            conexaoBd.AddParametro("@nome", nome);
-
-            var sql = @"SELECT a.Id
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var sql = @"SELECT a.Id
                                   ,a.Codigo
                                   ,a.Nome
-                                  ,b.Nome as Cidade
                                   ,a.Telefone
                                   ,a.DataCadastro as Cadastro
+                                  ,a.CidadeId
+                                  ,b.Id
+                                  ,b.Nome
+                                  ,b.Estado
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              WHERE a.Nome like '%' + @nome + '%'
                              ORDER BY a.Codigo";
 
-            return conexaoBd.ExecuteReader(sql);
+                return connection.Query<Cliente, Cidade, Cliente>(sql, (cliente, cidade) =>
+                {
+                    cliente.Cidade = cidade;
+                    return cliente;
+                }, new { nome = nome });
+            }
         }
 
-        public DataTable GetClientesById(Guid id)
+        public Cliente GetClienteById(Guid id)
         {
-            var conexaoBd = new ConexaoBd();
-            conexaoBd.AddParametro("@id", id);
-
-            var sql = @"SELECT a.Id
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var sql = @"SELECT a.Id
                                   ,a.Codigo
                                   ,a.Nome
-                                  ,b.Id as CidadeId
-                                  ,b.Nome as Cidade
+                                  ,a.CidadeId
                                   ,a.Telefone
                                   ,a.DataCadastro as Cadastro
+                                  ,b.Id
+                                  ,b.Nome
+                                  ,b.Estado
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              WHERE a.Id = @id";
 
-            return conexaoBd.ExecuteReader(sql);
-
+                return connection.Query<Cliente, Cidade, Cliente>(sql, (cliente, cidade) =>
+                {
+                    cliente.Cidade = cidade;
+                    return cliente;
+                }, new { id = id }).FirstOrDefault();
+            }
         }
 
         public int InsertCliente(Cliente cliente)
         {
-            var conexaoBd = new ConexaoBd();
-            conexaoBd.AddParametro("@nome", cliente.Nome);
-            conexaoBd.AddParametro("@cidade", cliente.CidadeId == Guid.Empty ? (object)DBNull.Value : cliente.CidadeId);
-            conexaoBd.AddParametro("@telefone", cliente.Telefone);
-
-            var sql = @"INSERT INTO Cliente (Nome, CidadeId, Telefone)
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var sql = @"INSERT INTO Cliente (Nome, CidadeId, Telefone)
                              VALUES (@nome, @cidade, @telefone)";
 
-            return conexaoBd.ExecuteNonQuery(sql);
-
+                return connection.Execute(sql, new
+                {
+                    nome = cliente.Nome,
+                    cidade = cliente.CidadeId,
+                    telefone = cliente.Telefone
+                });
+            }
         }
 
         public int EditCliente(Cliente cliente)
         {
-            var conexaoBd = new ConexaoBd();
-            conexaoBd.AddParametro("@nome", cliente.Nome);
-            conexaoBd.AddParametro("@cidade", cliente.CidadeId == Guid.Empty ? (object)DBNull.Value : cliente.CidadeId);
-            conexaoBd.AddParametro("@telefone", cliente.Telefone);
-            conexaoBd.AddParametro("@id", cliente.Id);
-
-            var sql = @"UPDATE Cliente 
-                               SET Nome = @nome, 
-                                   CidadeId = @cidade, 
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var sql = @"UPDATE Cliente
+                               SET Nome = @nome,
+                                   CidadeId = @cidade,
                                    Telefone = @telefone
                              WHERE Id = @id";
 
-            return conexaoBd.ExecuteNonQuery(sql);
-
+                return connection.Execute(sql, new
+                {
+                    id = cliente.Id,
+                    nome = cliente.Nome,
+                    cidade = cliente.CidadeId,
+                    telefone = cliente.Telefone
+                });
+            }
         }
 
         public int DeleteCliente(Guid clienteId)
         {
-            var conexaoBd = new ConexaoBd();
-            conexaoBd.AddParametro("@id", clienteId);
-
-            var sql = @"DELETE FROM Cliente 
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                var sql = @"DELETE FROM Cliente
                              WHERE Id = @id";
 
-            return conexaoBd.ExecuteNonQuery(sql);
+                return connection.Execute(sql, new
+                {
+                    id = clienteId
+                });
+            }
         }
     }
 }
