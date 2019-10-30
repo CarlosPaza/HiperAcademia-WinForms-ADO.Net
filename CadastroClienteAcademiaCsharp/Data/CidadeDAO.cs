@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using CadastroClienteAcademiaCsharp.Domain;
 using Dapper;
 
@@ -12,30 +13,20 @@ namespace CadastroClienteAcademiaCsharp.Data
     {
         public IEnumerable<Cidade> GetCidades()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var db = new DatabaseContext())
             {
-                var sql = @"SELECT a.Id
-                                  ,a.Nome
-                                  ,a.Estado
-                              FROM Cidade a
-                             ORDER BY a.Nome";
-
-                return connection.Query<Cidade>(sql);
+                return db.Cidades
+                    .OrderBy(x => x.Nome).ToList();
             }
         }
 
         public IEnumerable<Cidade> GetCidadesByNome(string nome)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var db = new DatabaseContext())
             {
-                var sql = @"SELECT a.Id
-                                  ,a.Nome
-                                  ,a.Estado
-                              FROM Cidade a
-                             WHERE a.Nome like '%' + @nome + '%'
-                             ORDER BY a.Nome";
-
-                return connection.Query<Cidade>(sql, new { nome = nome });
+                return db.Cidades
+                    .Where(x => x.Nome.Contains(nome))
+                    .OrderBy(x => x.Nome).ToList();
             }
         }
     }

@@ -28,7 +28,7 @@ namespace CadastroClienteAcademiaCsharp
             var cliente = _clienteService.GetClienteById(_clienteId);
             txtCodigo.Text = cliente.Codigo.ToString();
             txtNome.Text = cliente.Nome.ToString();
-            txtCidade.Text = cliente.Cidade.Nome.ToString();
+            txtCidade.Text = cliente.Cidade?.Nome ?? string.Empty;
             cidadeId = cliente.CidadeId.ToString();
             txtTelefone.Text = cliente.Telefone.ToString();
         }

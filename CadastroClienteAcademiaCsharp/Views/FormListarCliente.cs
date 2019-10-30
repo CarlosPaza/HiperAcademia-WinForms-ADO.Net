@@ -5,6 +5,7 @@ using System.Data;
 using System.Windows.Forms;
 using CadastroClienteAcademiaCsharp.Domain;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace CadastroClienteAcademiaCsharp
 {
@@ -42,7 +43,16 @@ namespace CadastroClienteAcademiaCsharp
 
         private void SetDataSource(IEnumerable<Cliente> dados)
         {
-            dgvCliente.DataSource = dados;
+            var data = dados.Select(x => new
+            {
+                Id = x.Id,
+                Codigo = x.Codigo,
+                Nome = x.Nome,
+                Telefone = x.Telefone,
+                Cidade = x.Cidade?.Nome ?? string.Empty
+            }).ToList();
+
+            dgvCliente.DataSource = data;
             dgvCliente.Columns[0].Visible = false;
         }
 
