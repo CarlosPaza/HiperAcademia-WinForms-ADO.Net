@@ -1,29 +1,20 @@
 ﻿using CadastroClienteAcademiaCsharp.Data;
 using CadastroClienteAcademiaCsharp.Domain;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
 
 namespace CadastroClienteAcademiaCsharp.Services
 {
     public class ClienteService
     {
-        public IEnumerable<Cliente> GetClientes()
+        public DataTable GetClientes(string nome = "")
         {
-            return new ClienteDAO().GetClientes();
+            return new ClienteRepository().GetClientes(nome);
         }
 
-        public IEnumerable<Cliente> GetClientesByNome(string nome)
+        public DataTable GetClientesById(string id)
         {
-            return string.IsNullOrEmpty(nome) ?
-                GetClientes() :
-                new ClienteDAO().GetClientesByNome(nome);
-        }
-
-        public Cliente GetClienteById(string id)
-        {
-            return new ClienteDAO().GetClienteById(Guid.Parse(id));
+            return new ClienteRepository().GetClientesById(Guid.Parse(id));
         }
 
         public int SaveCliente(string clienteId, string nome, string cidade, string telefone)
@@ -40,15 +31,15 @@ namespace CadastroClienteAcademiaCsharp.Services
 
             if (cliente.Id == Guid.Empty)
             {
-                return new ClienteDAO().InsertCliente(cliente);
+                return new ClienteRepository().InsertCliente(cliente);
             }
 
-            return new ClienteDAO().EditCliente(cliente);
+            return new ClienteRepository().EditCliente(cliente);
         }
 
         public int DeleteCliente(string clienteId)
         {
-            return new ClienteDAO().DeleteCliente(Guid.Parse(clienteId));
+            return new ClienteRepository().DeleteCliente(Guid.Parse(clienteId));
         }
     }
 }
