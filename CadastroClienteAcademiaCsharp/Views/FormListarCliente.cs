@@ -45,7 +45,7 @@ namespace CadastroClienteAcademiaCsharp
 
         public void btnBusca_Click(object sender, EventArgs e)
         {
-            SetDataSource(_clienteService.GetClientesByNome(txtBusca.Text));
+            SetDataSource(_clienteService.GetClientes(txtBusca.Text));
         }
 
         private void txtBusca_KeyDown(object sender, KeyEventArgs e)

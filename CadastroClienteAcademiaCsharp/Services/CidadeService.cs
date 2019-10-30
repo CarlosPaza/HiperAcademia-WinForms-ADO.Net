@@ -7,14 +7,14 @@ namespace CadastroClienteAcademiaCsharp.Services
     {
         public DataTable GetCidades()
         {
-            return new CidadeDAO().GetCidades();
+            return new CidadeRepository().GetCidades();
         }
 
         public DataTable GetCidadesByNome(string nome)
         {
             return string.IsNullOrEmpty(nome) ?
                 GetCidades() :
-                new CidadeDAO().GetCidadesByNome(nome);
+                new CidadeRepository().GetCidadesByNome(nome);
         }
     }
 }

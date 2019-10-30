@@ -7,21 +7,14 @@ namespace CadastroClienteAcademiaCsharp.Services
 {
     public class ClienteService
     {
-        public DataTable GetClientes()
+        public DataTable GetClientes(string nome = "")
         {
-            return new ClienteDAO().GetClientes();
-        }
-
-        public DataTable GetClientesByNome(string nome)
-        {
-            return string.IsNullOrEmpty(nome) ?
-                GetClientes() :
-                new ClienteDAO().GetClientesByNome(nome);
+            return new ClienteRepository().GetClientes(nome);
         }
 
         public DataTable GetClientesById(string id)
         {
-            return new ClienteDAO().GetClientesById(Guid.Parse(id));
+            return new ClienteRepository().GetClientesById(Guid.Parse(id));
         }
 
         public int SaveCliente(string clienteId, string nome, string cidade, string telefone)
@@ -38,15 +31,15 @@ namespace CadastroClienteAcademiaCsharp.Services
 
             if (cliente.Id == Guid.Empty)
             {
-                return new ClienteDAO().InsertCliente(cliente);
+                return new ClienteRepository().InsertCliente(cliente);
             }
 
-            return new ClienteDAO().EditCliente(cliente);
+            return new ClienteRepository().EditCliente(cliente);
         }
 
         public int DeleteCliente(string clienteId)
         {
-            return new ClienteDAO().DeleteCliente(Guid.Parse(clienteId));
+            return new ClienteRepository().DeleteCliente(Guid.Parse(clienteId));
         }
     }
 }
