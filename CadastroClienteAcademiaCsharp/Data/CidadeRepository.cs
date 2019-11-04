@@ -1,22 +1,37 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
-    public class CidadeRepository
+    public class CidadeRepository : ConexaoBd
     {
         public DataTable GetCidades()
         {
-            return StaticRepository.GetCidades();
+            var conexaoBd = new ConexaoBd();
+
+            var sql = @"SELECT a.Id
+                                ,a.Nome
+                                ,a.Estado
+                            FROM Cidade a
+                            ORDER BY a.Nome";
+
+            return conexaoBd.ExecuteReader(sql);
         }
 
         public DataTable GetCidadesByNome(string nome)
         {
-            var dt = StaticRepository.GetCidades().Select($" Nome like '%{nome}%' ");
+            var conexaoBd = new ConexaoBd();
+            conexaoBd.AddParametro("@nome", nome);
 
-            return dt.CopyToDataTable();
+            var sql = @"SELECT a.Id
+                            ,a.Nome
+                            ,a.Estado
+                        FROM Cidade a
+                        WHERE a.Nome like '%' + @nome + '%'
+                        ORDER BY a.Nome";
+            
+            return conexaoBd.ExecuteReader(sql);
         }
     }
 }
