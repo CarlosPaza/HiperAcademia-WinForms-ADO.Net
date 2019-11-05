@@ -8,21 +8,17 @@ namespace CadastroClienteAcademiaCsharp.Data
     {
         public DataTable GetClientes(string nome)
         {
-            var dt = StaticRepository.GetClientes().Select($" Nome like '%{nome}%' ");
-
-            return dt.CopyToDataTable();
+            return new DataTable();
         }
 
         public DataTable GetClientesById(Guid id)
         {
-            var dt = StaticRepository.GetClientes().Select($" Id= '{id.ToString()}' ");
-
-            return dt.CopyToDataTable();
+            return new DataTable();
         }
 
         public int InsertCliente(Cliente cliente)
         {
-            return StaticRepository.InsertCliente(cliente.Nome, cliente.CidadeId.ToString(), cliente.Telefone);
+            return 1;
         }
 
         public int EditCliente(Cliente cliente)

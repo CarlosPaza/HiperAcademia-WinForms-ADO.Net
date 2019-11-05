@@ -40,7 +40,9 @@ namespace CadastroClienteAcademiaCsharp
         private void SetDataSource(DataTable dados)
         {
             dgvCliente.DataSource = dados;
-            dgvCliente.Columns[0].Visible = false;
+
+            if(dgvCliente.Columns.Count > 0)
+                dgvCliente.Columns[0].Visible = false;
         }
 
         public void btnBusca_Click(object sender, EventArgs e)
