@@ -27,7 +27,8 @@ namespace CadastroClienteAcademiaCsharp.Services
                 Id = id,
                 Nome = nome,
                 CidadeId = cidadeId,
-                Telefone = telefone
+                Telefone = telefone,
+                DataDeCadastro = DateTime.Now
             };
 
             if (cliente.Id == Guid.Empty)

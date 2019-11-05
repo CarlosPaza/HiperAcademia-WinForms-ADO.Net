@@ -3,6 +3,7 @@ using CadastroClienteAcademiaCsharp.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CadastroClienteAcademiaCsharp
@@ -26,7 +27,11 @@ namespace CadastroClienteAcademiaCsharp
 
         private void SetDataSource(IEnumerable<Cidade> dados)
         {
-            dgvCidade.DataSource = dados;
+            dgvCidade.DataSource = dados.Select(x => new { 
+                x.Id,
+                x.Nome,
+                x.Estado
+            }).ToList();
             dgvCidade.Columns[0].Visible = false;
         }
 
