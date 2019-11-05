@@ -20,10 +20,10 @@ namespace CadastroClienteAcademiaCsharp.Data
                 cliente.Nome = item["Nome"].ToString();
                 cliente.Telefone = item["Telefone"].ToString();
                 cliente.DataDeCadastro = DateTime.Parse(item["DataCadastro"].ToString());
-                cliente.CidadeId = Guid.Parse(item["CidadeId"].ToString());
+                cliente.CidadeId = Guid.TryParse(item["CidadeId"].ToString(), out var cidadeIdCliente) ? cidadeIdCliente : (Guid?)null;
                 
                 cliente.Cidade = new Cidade();
-                cliente.Cidade.Id = Guid.Parse(item["CidadeId"].ToString());
+                cliente.Cidade.Id = Guid.TryParse(item["CidadeId"].ToString(), out var cidadeId) ? cidadeId : Guid.Empty;
                 cliente.Cidade.Nome = item["CidadeNome"].ToString();
                 cliente.Cidade.Estado = item["Estado"].ToString();
 
@@ -97,7 +97,7 @@ namespace CadastroClienteAcademiaCsharp.Data
         {
             var conexaoBd = new ConexaoBd();
             conexaoBd.AddParametro("@nome", cliente.Nome);
-            conexaoBd.AddParametro("@cidade", cliente.CidadeId);
+            conexaoBd.AddParametro("@cidade", cliente.CidadeId ?? (object)DBNull.Value);
             conexaoBd.AddParametro("@telefone", cliente.Telefone);
             conexaoBd.AddParametro("@id", cliente.Id);
 

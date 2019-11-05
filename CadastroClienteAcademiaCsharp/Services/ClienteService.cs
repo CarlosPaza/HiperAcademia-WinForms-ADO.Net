@@ -20,7 +20,7 @@ namespace CadastroClienteAcademiaCsharp.Services
 
         public int SaveCliente(string clienteId, string nome, string cidade, string telefone)
         {
-            var cidadeId = string.IsNullOrWhiteSpace(cidade) ? Guid.Empty : Guid.Parse(cidade);
+            var cidadeId = string.IsNullOrWhiteSpace(cidade) ? (Guid?)null : Guid.Parse(cidade);
             var id = clienteId is null ? Guid.Empty : Guid.Parse(clienteId);
             var cliente = new Cliente()
             {
