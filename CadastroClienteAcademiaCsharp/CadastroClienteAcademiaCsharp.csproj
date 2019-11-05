@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Data\CidadeRepository.cs" />
     <Compile Include="Data\ClienteRepository.cs" />
+    <Compile Include="Data\ConexaoBd.cs" />
     <Compile Include="Domain\Cidade.cs" />
     <Compile Include="Domain\Cliente.cs" />
     <Compile Include="Services\CidadeService.cs" />
