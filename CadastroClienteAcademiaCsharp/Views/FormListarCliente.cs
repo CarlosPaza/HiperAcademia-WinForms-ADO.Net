@@ -31,6 +31,7 @@ namespace CadastroClienteAcademiaCsharp
 
         private void btnEditar_Click(object sender, EventArgs e)
         {
+            if (dgvCliente.CurrentRow is null) return;
             var formularioCliente = new FormularioCliente(this, dgvCliente.CurrentRow.Cells["Id"].Value.ToString());
             formularioCliente.Show();
         }
@@ -75,6 +76,7 @@ namespace CadastroClienteAcademiaCsharp
 
         private void btnExcluir_Click(object sender, EventArgs e)
         {
+            if (dgvCliente.CurrentRow is null) return;
             if (dgvCliente.SelectedCells.Count > 0)
             {
                 var resposta = MessageBox.Show("Deseja excluir o cliente selecionado?", "Excluir", MessageBoxButtons.YesNo);
