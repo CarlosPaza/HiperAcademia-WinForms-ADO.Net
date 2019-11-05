@@ -1,17 +1,21 @@
-﻿using System.Data;
+﻿using CadastroClienteAcademiaCsharp.Domain;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
     public class CidadeRepository
     {
-        public DataTable GetCidadesByNome(string nome)
+        public IEnumerable<Cidade> GetCidades()
         {
-            return new DataTable();
+            return new List<Cidade>();
         }
 
-        public DataTable GetCidades()
+        public IEnumerable<Cidade> GetCidadesByNome(string nome)
         {
-            return new DataTable();
+            return new List<Cidade>();
         }
     }
 }

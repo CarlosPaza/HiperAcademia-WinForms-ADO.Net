@@ -34,7 +34,7 @@ CREATE TABLE Cliente
  Id uniqueidentifier DEFAULT NEWID() NOT NULL primary key,
  Codigo int NOT NULL IDENTITY(1, 1),
  Nome nvarchar(100) NOT NULL,
- CidadeId uniqueidentifier NULL,
+ CidadeId uniqueidentifier NOT NULL,
  Telefone nvarchar(20) NULL,
  DataCadastro datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
  CONSTRAINT FK_Cidade FOREIGN KEY (CidadeId) REFERENCES Cidade(Id)
@@ -46,9 +46,9 @@ INSERT INTO Cliente (Nome, CidadeId, Telefone)
  VALUES ('João', (SELECT Id FROM Cidade where Nome = 'Brusque'), '4712349876'), 
 	    ('Carlos', (SELECT Id FROM Cidade where Nome = 'Brusque'), '4712455876'),
 		('Bruna', (SELECT Id FROM Cidade where Nome = 'Rio de Janeiro'), '1245349876'),
-		('Rafael', NULL, '4712119876'),
+		('Rafael', (SELECT Id FROM Cidade where Nome = 'Brusque'), '4712119876'),
 		('Pedro', (SELECT Id FROM Cidade where Nome = 'Blumenau'), '4712349876'),
-		('Antonio', NULL, '4712349876'),
-		('Fernanda', NULL, NULL),
+		('Antonio', (SELECT Id FROM Cidade where Nome = 'Brusque'), '4712349876'),
+		('Fernanda', (SELECT Id FROM Cidade where Nome = 'Brusque'), NULL),
 		('Aline', (SELECT Id FROM Cidade where Nome = 'Belo Horizonte'), '4712349876')
 GO

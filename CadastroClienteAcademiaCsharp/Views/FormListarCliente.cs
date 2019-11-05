@@ -1,6 +1,9 @@
-﻿using CadastroClienteAcademiaCsharp.Services;
+﻿using CadastroClienteAcademiaCsharp.Domain;
+using CadastroClienteAcademiaCsharp.Services;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CadastroClienteAcademiaCsharp
@@ -37,12 +40,16 @@ namespace CadastroClienteAcademiaCsharp
             SetDataSource(_clienteService.GetClientes());
         }
 
-        private void SetDataSource(DataTable dados)
+        private void SetDataSource(IEnumerable<Cliente> dados)
         {
-            dgvCliente.DataSource = dados;
-
-            if(dgvCliente.Columns.Count > 0)
-                dgvCliente.Columns[0].Visible = false;
+            dgvCliente.DataSource = dados.Select(x => new { 
+                x.Id,
+                x.Codigo,
+                x.Nome,
+                Cidade = x.Cidade.Nome,
+                x.Telefone
+            }).ToList();
+            dgvCliente.Columns[0].Visible = false;
         }
 
         public void btnBusca_Click(object sender, EventArgs e)

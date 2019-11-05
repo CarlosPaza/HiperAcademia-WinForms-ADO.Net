@@ -1,19 +1,21 @@
 ﻿using CadastroClienteAcademiaCsharp.Domain;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
     public class ClienteRepository
     {
-        public DataTable GetClientes(string nome)
+        public IEnumerable<Cliente> GetClientes(string nome)
         {
-            return new DataTable();
+            return new List<Cliente>();
         }
 
-        public DataTable GetClientesById(Guid id)
+        public Cliente GetClientesById(Guid id)
         {
-            return new DataTable();
+            return null;
         }
 
         public int InsertCliente(Cliente cliente)
