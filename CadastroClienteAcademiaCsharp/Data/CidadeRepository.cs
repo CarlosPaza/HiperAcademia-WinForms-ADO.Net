@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CadastroClienteAcademiaCsharp.Domain;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,7 +8,25 @@ namespace CadastroClienteAcademiaCsharp.Data
 {
     public class CidadeRepository : ConexaoBd
     {
-        public DataTable GetCidades()
+        private IEnumerable<Cidade> Parser(DataTable dt)
+        {
+            var list = new List<Cidade>();
+
+            foreach (DataRow item in dt.Rows)
+            {
+                var cidade = new Cidade();
+                cidade.Id = Guid.Parse(item["Id"].ToString());
+                cidade.Nome = item["Nome"].ToString();
+                cidade.Estado = item["Estado"].ToString();
+
+                list.Add(cidade);
+            }
+
+            return list;
+        }
+
+
+        public IEnumerable<Cidade> GetCidades()
         {
             var conexaoBd = new ConexaoBd();
 
@@ -16,10 +36,12 @@ namespace CadastroClienteAcademiaCsharp.Data
                             FROM Cidade a
                             ORDER BY a.Nome";
 
-            return conexaoBd.ExecuteReader(sql);
+            var dt = conexaoBd.ExecuteReader(sql);
+
+            return Parser(dt);
         }
 
-        public DataTable GetCidadesByNome(string nome)
+        public IEnumerable<Cidade> GetCidadesByNome(string nome)
         {
             var conexaoBd = new ConexaoBd();
             conexaoBd.AddParametro("@nome", nome);
@@ -30,8 +52,10 @@ namespace CadastroClienteAcademiaCsharp.Data
                         FROM Cidade a
                         WHERE a.Nome like '%' + @nome + '%'
                         ORDER BY a.Nome";
-            
-            return conexaoBd.ExecuteReader(sql);
+
+            var dt = conexaoBd.ExecuteReader(sql);
+
+            return Parser(dt);
         }
     }
 }

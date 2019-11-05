@@ -1,18 +1,19 @@
 ﻿using CadastroClienteAcademiaCsharp.Data;
 using CadastroClienteAcademiaCsharp.Domain;
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace CadastroClienteAcademiaCsharp.Services
 {
     public class ClienteService
     {
-        public DataTable GetClientes(string nome = "")
+        public IEnumerable<Cliente> GetClientes(string nome = "")
         {
             return new ClienteRepository().GetClientes(nome);
         }
 
-        public DataTable GetClientesById(string id)
+        public Cliente GetClientesById(string id)
         {
             return new ClienteRepository().GetClientesById(Guid.Parse(id));
         }

@@ -1,12 +1,39 @@
 ﻿using CadastroClienteAcademiaCsharp.Domain;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace CadastroClienteAcademiaCsharp.Data
 {
     public class ClienteRepository : ConexaoBd
     {
-        public DataTable GetClientes(string nome)
+        private IEnumerable<Cliente> Parser(DataTable dt)
+        {
+            var list = new List<Cliente>();
+
+            foreach (DataRow item in dt.Rows)
+            {
+                var cliente = new Cliente();
+                cliente.Codigo = int.Parse(item["Codigo"].ToString());
+                cliente.Id = Guid.Parse(item["Id"].ToString());
+                cliente.Nome = item["Nome"].ToString();
+                cliente.Telefone = item["Telefone"].ToString();
+                cliente.DataDeCadastro = DateTime.Parse(item["DataCadastro"].ToString());
+                cliente.CidadeId = Guid.Parse(item["CidadeId"].ToString());
+                
+                cliente.Cidade = new Cidade();
+                cliente.Cidade.Id = Guid.Parse(item["CidadeId"].ToString());
+                cliente.Cidade.Nome = item["CidadeNome"].ToString();
+                cliente.Cidade.Estado = item["Estado"].ToString();
+
+                list.Add(cliente);
+            }
+
+            return list;
+        }
+
+        public IEnumerable<Cliente> GetClientes(string nome)
         {
             var conexaoBd = new ConexaoBd();
             conexaoBd.AddParametro("@nome", nome);
@@ -14,18 +41,22 @@ namespace CadastroClienteAcademiaCsharp.Data
             var sql = @"SELECT a.Id
                                   ,a.Codigo
                                   ,a.Nome
-                                  ,b.Nome as Cidade
+                                  ,b.Id as CidadeId
+                                  ,b.Nome as CidadeNome
+                                  ,b.Estado
                                   ,a.Telefone
-                                  ,a.DataCadastro as Cadastro
+                                  ,a.DataCadastro
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              WHERE a.Nome like '%' + @nome + '%'
                              ORDER BY a.Codigo";
 
-            return conexaoBd.ExecuteReader(sql);
+            var dt = conexaoBd.ExecuteReader(sql);
+
+            return Parser(dt);
         }
 
-        public DataTable GetClientesById(Guid id)
+        public Cliente GetClientesById(Guid id)
         {
             var conexaoBd = new ConexaoBd();
             conexaoBd.AddParametro("@id", id);
@@ -34,14 +65,17 @@ namespace CadastroClienteAcademiaCsharp.Data
                                   ,a.Codigo
                                   ,a.Nome
                                   ,b.Id as CidadeId
-                                  ,b.Nome as Cidade
+                                  ,b.Nome as CidadeNome
+                                  ,b.Estado
                                   ,a.Telefone
-                                  ,a.DataCadastro as Cadastro
+                                  ,a.DataCadastro
                               FROM Cliente a
                               LEFT JOIN Cidade b ON b.Id = a.CidadeId
                              WHERE a.Id = @id";
 
-            return conexaoBd.ExecuteReader(sql);
+            var dt = conexaoBd.ExecuteReader(sql);
+
+            return Parser(dt).FirstOrDefault();
 
         }
 
@@ -49,7 +83,7 @@ namespace CadastroClienteAcademiaCsharp.Data
         {
             var conexaoBd = new ConexaoBd();
             conexaoBd.AddParametro("@nome", cliente.Nome);
-            conexaoBd.AddParametro("@cidade", cliente.CidadeId == Guid.Empty ? (object)DBNull.Value : cliente.CidadeId);
+            conexaoBd.AddParametro("@cidade", cliente.CidadeId);
             conexaoBd.AddParametro("@telefone", cliente.Telefone);
 
             var sql = @"INSERT INTO Cliente (Nome, CidadeId, Telefone)
@@ -63,7 +97,7 @@ namespace CadastroClienteAcademiaCsharp.Data
         {
             var conexaoBd = new ConexaoBd();
             conexaoBd.AddParametro("@nome", cliente.Nome);
-            conexaoBd.AddParametro("@cidade", cliente.CidadeId == Guid.Empty ? (object)DBNull.Value : cliente.CidadeId);
+            conexaoBd.AddParametro("@cidade", cliente.CidadeId);
             conexaoBd.AddParametro("@telefone", cliente.Telefone);
             conexaoBd.AddParametro("@id", cliente.Id);
 

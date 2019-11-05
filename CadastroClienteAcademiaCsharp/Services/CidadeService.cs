@@ -1,20 +1,20 @@
 ﻿using CadastroClienteAcademiaCsharp.Data;
+using CadastroClienteAcademiaCsharp.Domain;
+using System.Collections.Generic;
 using System.Data;
 
 namespace CadastroClienteAcademiaCsharp.Services
 {
     public class CidadeService
     {
-        public DataTable GetCidades()
+        public IEnumerable<Cidade> GetCidades()
         {
             return new CidadeRepository().GetCidades();
         }
 
-        public DataTable GetCidadesByNome(string nome)
+        public IEnumerable<Cidade> GetCidadesByNome(string nome)
         {
-            return string.IsNullOrEmpty(nome) ?
-                GetCidades() :
-                new CidadeRepository().GetCidadesByNome(nome);
+             return new CidadeRepository().GetCidadesByNome(nome);
         }
     }
 }
