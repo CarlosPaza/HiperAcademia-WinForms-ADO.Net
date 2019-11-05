@@ -66,6 +66,13 @@ namespace CadastroClienteAcademiaCsharp
                 return false;
             }
 
+            if (string.IsNullOrWhiteSpace(txtCidade.Text))
+            {
+                MessageBox.Show("O campo cidade é obrigatório!");
+                btnLocalizarCidade.Focus();
+                return false;
+            }
+
             return true;
         }
 
